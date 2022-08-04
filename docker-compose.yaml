@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+#  redis:
+#    image: redis:6
+#    expose:
+#      - 5672
+#    ports:
+#      - "5672:5672"
+#    networks:
+#      - default
+#
+#  rabbitmq:
+#    image: rabbitmq:management
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=rabbitmq
+#      - RABBITMQ_DEFAULT_PASS=rabbitmq
+#    expose:
+#      - 5672
+#    ports:
+#      - "15672:15672"
+#      - "5672:5672"
+#    networks:
+#      - default
+
+  mysql: # root/rootroot
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=csc1234
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+    networks:
+      - default
+
+networks:
+  default:
