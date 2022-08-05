@@ -1,21 +1,16 @@
 package com.example.requestforwardapp.controller;
 
-import com.example.requestforwardapp.config.RabbitConfig;
 import com.example.requestforwardapp.models.LineItem;
 import com.example.requestforwardapp.models.MessageResponse;
 import com.example.requestforwardapp.models.SaleOrder;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.requestforwardapp.service.OrderService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -24,57 +19,76 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
-
-
-    public OrderController(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
+    private OrderService orderService;
 
     @RequestMapping(value="/order",method = RequestMethod.GET)
     public ResponseEntity<List<SaleOrder>> getAllOrders() {
-
-        return null;
+        try {
+            List<SaleOrder> orders = orderService.getAllOrders();
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @SneakyThrows()
     @RequestMapping(value="/order",method = RequestMethod.POST)
     public ResponseEntity<SaleOrder> createOrders(@RequestBody SaleOrder saleOrder) {
-        SaleOrder result = (SaleOrder) rabbitTemplate.convertSendAndReceive(RabbitConfig.RPC_EXCHANGE, RabbitConfig.RPC_QUEUE1, saleOrder);
-        if (result != null) {
-            // 获取已发送的消息的 correlationId
-            String correlationId = result.getMessageProperties().getCorrelationId();
-            log.info("correlationId:{}", correlationId);
-
-            return ResponseEntity.ok(result);
+        try {
+            SaleOrder generatedOrder = orderService.createOrders(saleOrder);
+            return ResponseEntity.ok(generatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
     @RequestMapping(value="/order/{orderid}", method = RequestMethod.GET)
     public ResponseEntity<SaleOrder> getOrder(@PathVariable("orderid") Integer orderid) {
-        return null;
+        try {
+            SaleOrder order = orderService.getOrder(orderid);
+            if(order!=null)
+                return ResponseEntity.ok(order);
+            else
+                return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value="/order/{orderid}", method = RequestMethod.POST)
     public ResponseEntity<LineItem> createOrderLineItem(@PathVariable("orderid") Integer orderid, @RequestBody LineItem lineItem) {
-        return null;
+        try {
+            LineItem savedLineItem = orderService.createOrderLineItem(orderid,lineItem);
+            return ResponseEntity.ok(savedLineItem);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value="/order/{orderid}", method = RequestMethod.DELETE)
     public ResponseEntity<MessageResponse> deleteOrder(@PathVariable("orderid") Integer orderid) {
-        return null;
+            boolean result = orderService.deleteOrder(orderid);
+            return result ? ResponseEntity.ok(new MessageResponse(200,"delete order success")) : ResponseEntity.badRequest().build();
     }
 
 
     @RequestMapping(value="/order/{orderid}/{lineitemid}", method = RequestMethod.DELETE)
     public ResponseEntity<MessageResponse> deleteOrderLineItem(@PathVariable("orderid") Integer orderid, @PathVariable("lineitemid") Integer lineitemid) {
-        return null;
+            boolean result = orderService.deleteOrderLineItem(orderid,lineitemid);
+            return result ? ResponseEntity.ok(new MessageResponse(200,"delete lineitem success")) : ResponseEntity.badRequest().build();
     }
 
     @RequestMapping(value="/order/{orderid}/checkout", method = RequestMethod.POST)
-    public ResponseEntity<MessageResponse> checkout(@PathVariable("orderid") Integer orderid) {
-        return null;
+    public ResponseEntity<Integer> checkout(@PathVariable("orderid") Integer orderid) {
+            int state = orderService.checkout(orderid);
+            if(state==1)
+                return ResponseEntity.ok(state);
+            else if(state==0)
+                return ResponseEntity.ok(state);
+            else if(state==500)
+                return  ResponseEntity.ok(500);
+            else {
+                return ResponseEntity.ok(state);
+            }
     }
 
 }

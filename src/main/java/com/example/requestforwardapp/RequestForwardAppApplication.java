@@ -12,33 +12,33 @@ import org.springframework.web.reactive.function.client.WebClient;
 @SpringBootApplication
 public class RequestForwardAppApplication {
     @Value("${resource.server.query-app.host}")
-    private String QueryAppHost;
+    private String app2;
     @Value("${resource.server.order-app.host}")
-    private String OrderAppHost;
+    private String app4;
     @Value("${resource.server.product-app.host}")
-    private String ProductAppHost;
+    private String app3;
 
     public static void main(String[] args) {
         SpringApplication.run(RequestForwardAppApplication.class, args);
     }
     @Bean
-    WebClient webClientQueryApp() {
+    WebClient app2() {
         return WebClient.builder()
-                .baseUrl(QueryAppHost)
+                .baseUrl(app2)
                 .build();
     }
 
     @Bean
-    WebClient webClientOrderApp() {
+    WebClient app4() {
         return WebClient.builder()
-                .baseUrl(OrderAppHost)
+                .baseUrl(app4)
                 .build();
     }
 
     @Bean
-    WebClient webClientProductAppHost() {
+    WebClient app3() {
         return WebClient.builder()
-                .baseUrl(ProductAppHost)
+                .baseUrl(app3)
                 .build();
     }
 

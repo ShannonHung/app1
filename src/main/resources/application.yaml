@@ -2,6 +2,7 @@ spring:
   # database
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
     hibernate:
       ddl-auto: update
   datasource:
@@ -9,27 +10,27 @@ spring:
     username: root
     password: csc1234
   # rabbit
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    publisher-confirm-type: correlated # if this configuration is turned on, the future message will be with correlation_id
-    publisher-returns: true # The last line of the configuration is to enable the return of failure to send.
+  #  rabbitmq:
+  #    host: localhost
+  #    port: 5672
+  #    username: guest
+  #    password: guest
+  #    publisher-confirm-type: correlated # if this configuration is turned on, the future message will be with correlation_id
+  #    publisher-returns: true # The last line of the configuration is to enable the return of failure to send.
   # cache
   cache:
     type: ehcache
     ehcache:
       config: classpath:/ehcache.xml
 
-  # other services
+# other services
 resource.server:
   query-app:
-#    host: http://query-app-svc:8081/api
-    host: http://localhost:8081/api
+#    host: http://query-app-svc:8080/api
+    host: http://localhost:8081/api/v1
   order-app:
-#    host: http://order-app-svc:8083/api
-    host: http://localhost:8081/api
+#    host: http://order-app-svc:8080/api
+    host: http://localhost:8081/api/v1
   product-app:
-    host: http://localhost:8081/api
-#    host: http://product-app-svc:8082/api
+    host: http://localhost:8081/api/v1
+#    host: http://product-app-svc:8080/api
