@@ -1,14 +1,14 @@
 spring:
   # database
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-  datasource:
-    url: jdbc:mysql://localhost:3306/simpleshop
-    username: root
-    password: csc1234
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/simpleshop
+#    username: root
+#    password: csc1234
   # rabbit
   #  rabbitmq:
   #    host: localhost
@@ -26,11 +26,11 @@ spring:
 # other services
 resource.server:
   query-app:
-#    host: http://query-app-svc:8080/api
-    host: http://localhost:8081/api/v1
+    host: http://app2-svc:8081/api/v1
+#    host: http://localhost:8081/api/v1
   order-app:
-#    host: http://order-app-svc:8080/api
-    host: http://localhost:8081/api/v1
+    host: http://app4-svc:8081/api/v1
+#    host: http://localhost:8081/api/v1
   product-app:
-    host: http://localhost:8081/api/v1
-#    host: http://product-app-svc:8080/api
+#    host: http://localhost:8081/api/v1
+    host: http://app3-svc:30081/api/v1
